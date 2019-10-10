@@ -10,6 +10,42 @@
 /HrBoxApi/node_modules
 /HrBoxApi/wwwroot/node_modules
 
-
 # End of https://www.gitignore.io/api/dotnetcore
 /HrBoxApi/.vs/HrBoxApi/v16/Server/sqlite3
+
+## Angular ##
+# compiled output
+HrBox/dist/
+HrBox/tmp/
+HrBox/app/**/*.js
+HrBox/app/**/*.js.map
+
+# dependencies
+HrBox/node_modules/
+HrBox/bower_components/
+
+# IDEs and editors
+HrBox/.idea/
+
+# misc
+HrBox/.sass-cache/
+HrBox/connect.lock/
+HrBox/coverage/
+HrBox/libpeerconnection.log/
+HrBox/npm-debug.log
+HrBox/testem.log
+HrBox/typings/
+
+# e2e
+HrBox/e2e/*.js
+e2e/*.map
+
+#System Files
+HrBox/.DS_Store/
+
+# End of Angular
+
+# Vscode
+.vscode
+
+
