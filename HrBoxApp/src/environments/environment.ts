@@ -3,7 +3,18 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  // Get the api url endpoint.
+  get apiUrl(): string {
+    if (this.production){
+      // production url
+      return "mydomain.com";
+    }
+    else {
+      // dev url
+      return "https://localhost:44352";
+    }
+  }
 };
 
 /*
