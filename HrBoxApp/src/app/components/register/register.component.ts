@@ -4,6 +4,7 @@ import { MustMatch } from '../../shared/helpers/must-match.validator';
 import { UserService } from 'src/app/services/user.service';
 import { GenericResponse } from 'src/app/shared/models/generic';
 import { throwError } from 'rxjs';
+import { faEnvelope, faLock, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
 	selector: 'app-register',
@@ -11,6 +12,8 @@ import { throwError } from 'rxjs';
 	styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
+	faEnvelope: IconDefinition = faEnvelope;
+	faLock: IconDefinition = faLock;
 	registerForm: FormGroup;
 	submitting: boolean = false;
 	submitted: boolean = false;

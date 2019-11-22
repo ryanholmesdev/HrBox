@@ -2,66 +2,121 @@
 	<h1>Register with HrBox</h1>
 	<form name="form" [formGroup]="registerForm" (ngSubmit)="registerUser()" novalidate>
 		<!-- First Name -->
-		<label for="FirstName">First Name</label>
-		<input type="text" formControlName="FirstName" name="FirstName" [class.is-danger]="(submitted || f.FirstName.touched) && f.FirstName.invalid" />
-		<div *ngIf="(submitted || f.FirstName.touched) && f.FirstName.errors" class="help is-danger">
-			<span *ngIf="f.FirstName.errors.required">First Name is required.</span>
-			<span *ngIf="f.FirstName.errors.minlength">First name must be minimum 2 characters long.</span>
-			<span *ngIf="f.FirstName.errors.maxlength">First name cannot exceed 50 characters.</span>
+		<div class="field">
+			<label class="label" for="FirstName">First Name</label>
+			<div class="control">
+				<input
+					type="text"
+					class="input"
+					name="FirstName"
+					formControlName="FirstName"
+					[class.is-danger]="(submitted || f.FirstName.touched) && f.FirstName.invalid"
+				/>
+			</div>
+			<div *ngIf="(submitted || f.FirstName.touched) && f.FirstName.errors" class="help is-danger">
+				<p *ngIf="f.FirstName.errors.required" class="help is-danger">First Name is required.</p>
+				<p *ngIf="f.FirstName.errors.minlength" class="help is-danger">First name must be minimum 2 characters long.</p>
+				<p *ngIf="f.FirstName.errors.maxlength" class="help is-danger">First name cannot exceed 50 characters.</p>
+			</div>
 		</div>
 
 		<!-- Last Name -->
-		<label for="LastName">Last Name</label>
-		<input type="text" formControlName="LastName" name="LastName" [class.is-danger]="(submitted || f.LastName.touched) && f.LastName.invalid" />
-		<div *ngIf="(submitted || f.LastName.touched) && f.LastName.errors" class="help is-danger">
-			<span *ngIf="f.LastName.errors.required">Last Name is required.</span>
-			<span *ngIf="f.LastName.errors.minlength">Last name must be minimum 2 characters long.</span>
-			<span *ngIf="f.LastName.errors.maxlength">Last name cannot exceed 80 characters.</span>
+		<div class="field">
+			<label class="label" for="LastName">Last Name</label>
+			<div class="control">
+				<input
+					type="text"
+					class="input"
+					name="LastName"
+					formControlName="LastName"
+					[class.is-danger]="(submitted || f.LastName.touched) && f.LastName.invalid"
+				/>
+			</div>
+			<div *ngIf="(submitted || f.LastName.touched) && f.LastName.errors" class="help is-danger">
+				<p *ngIf="f.LastName.errors.required">Last Name is required.</p>
+				<p *ngIf="f.LastName.errors.minlength">Last name must be minimum 2 characters long.</p>
+				<p *ngIf="f.LastName.errors.maxlength">Last name cannot exceed 80 characters.</p>
+			</div>
 		</div>
 
 		<!-- Email -->
-		<label class="label" for="Email">Email</label>
-		<input class="input" type="email" formControlName="Email" name="Email" [class.is-danger]="(submitted || f.Email.touched) && f.Email.invalid" />
-		<div *ngIf="(submitted || f.Email.touched) && f.Email.errors" class="help is-danger">
-			<span *ngIf="f.Email.errors.required">Email is required.</span>
-			<span *ngIf="f.Email.errors.Email">Invalid email address.</span>
-			<span *ngIf="f.Email.errors.maxlength">Email must not exceed 300 characters.</span>
+		<div class="field">
+			<label class="label" for="Email">Email</label>
+			<div class="control has-icons-left">
+				<input type="email" class="input" name="Email" formControlName="Email" [class.is-danger]="(submitted || f.Email.touched) && f.Email.invalid" />
+				<span class="icon is-small is-left">
+					<fa-icon [icon]="faEnvelope"></fa-icon>
+				</span>
+			</div>
+			<div *ngIf="(submitted || f.Email.touched) && f.Email.errors" class="help is-danger">
+				<p *ngIf="f.Email.errors.required">Email is required.</p>
+				<p *ngIf="f.Email.errors.Email">Invalid email address.</p>
+				<p *ngIf="f.Email.errors.maxlength">Email must not exceed 300 characters.</p>
+			</div>
 		</div>
 
-		<label class="label" for="Password">Password</label>
-		<input
-			class="input"
-			type="password"
-			formControlName="Password"
-			name="Password"
-			[class.is-danger]="(submitted || f.Password.touched) && f.Password.invalid"
-		/>
-		<div *ngIf="(submitted || f.Password.touched) && f.Password.errors" class="help is-danger">
-			<span *ngIf="f.Password.errors.required">Password is required.</span>
-			<span *ngIf="f.Password.errors.minlength">Password must be minimum 5 characters.</span>
-			<span *ngIf="f.Password.errors.maxlength">Password must not exceed 200 characters.</span>
+		<!-- Password -->
+		<div class="field" for="Password">
+			<label class="label">Password</label>
+			<div class="control has-icons-left">
+				<input
+					class="input"
+					type="password"
+					formControlName="Password"
+					name="Password"
+					[class.is-danger]="(submitted || f.Password.touched) && f.Password.invalid"
+				/>
+				<span class="icon is-small is-left">
+					<fa-icon [icon]="faLock"></fa-icon>
+				</span>
+			</div>
+			<div *ngIf="(submitted || f.Password.touched) && f.Password.errors" class="help is-danger">
+				<p *ngIf="f.Password.errors.required">Password is required.</p>
+				<p *ngIf="f.Password.errors.minlength">Password must be minimum 5 characters.</p>
+				<p *ngIf="f.Password.errors.maxlength">Password must not exceed 200 characters.</p>
+			</div>
 		</div>
 
-		<label class="label" for="ConfirmPassword">Confirm Password</label>
-		<input
-			class="input"
-			type="password"
-			formControlName="ConfirmPassword"
-			name="ConfirmPassword"
-			[class.is-danger]="(submitted || f.ConfirmPassword.touched) && f.ConfirmPassword.invalid"
-		/>
-		<div *ngIf="(submitted || f.ConfirmPassword.touched) && f.ConfirmPassword.errors" class="help is-danger">
-			<span *ngIf="f.ConfirmPassword.errors.mustMatch">Passwords must match</span>
+		<!-- Confirm Password -->
+		<div class="field">
+			<label class="label" for="ConfirmPassword">Confirm Password</label>
+			<div class="control has-icons-left">
+				<input
+					class="input"
+					type="password"
+					formControlName="ConfirmPassword"
+					name="ConfirmPassword"
+					[class.is-danger]="(submitted || f.ConfirmPassword.touched) && f.ConfirmPassword.invalid"
+				/>
+				<span class="icon is-small is-left">
+					<fa-icon [icon]="faLock"></fa-icon>
+				</span>
+			</div>
+			<div *ngIf="(submitted || f.ConfirmPassword.touched) && f.ConfirmPassword.errors" class="help is-danger">
+				<p *ngIf="!f.ConfirmPassword.errors.mustMatch">Passwords must match</p>
+			</div>
 		</div>
 
-		By signing up I agree to the <a href="/terms-and-conditions" title="Terms and conditions" target="_blank">terms and conditions</a>
+		<!-- Terms and conditions -->
+		<div class="field">
+			<div class="control">
+				<label class="checkbox">
+					By signing up I agree to the <a href="/terms-and-conditions" title="Terms and conditions" target="_blank">terms and conditions</a>
+				</label>
+			</div>
+		</div>
 
-		<div *ngIf="!submitting && submitted && !success" class="help is-danger">
-			<span>{{ submitMsg }}</span>
+		<!-- Final Result -->
+		<div class="field">
+			<div class="control">
+				<div *ngIf="!submitting && submitted && !success" class="help is-danger">
+					<span>{{ submitMsg }}</span>
+				</div>
+				<div *ngIf="!submitting && submitted && success" class="help is-success">
+					<span>{{ submitMsg }}</span>
+				</div>
+				<button class="button is-success" type="submit" [class.is-loading]="submitting" [disabled]="submitting || success">Create Account</button>
+			</div>
 		</div>
-		<div *ngIf="!submitting && submitted && success" class="help is-success">
-			<span>{{ submitMsg }}</span>
-		</div>
-		<button class="button is-success" type="submit" [class.is-loading]="submitting" [disabled]="submitting || success">Create Account</button>
 	</form>
 </div>

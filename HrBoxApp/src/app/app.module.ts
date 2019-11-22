@@ -8,9 +8,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './components/register/register.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { MustMatchDirective } from './shared/helpers/must-match-directive';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 @NgModule({
 	declarations: [AppComponent, LoginComponent, RegisterComponent, PageNotFoundComponent, MustMatchDirective],
-	imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule, ReactiveFormsModule],
+	imports: [BrowserModule, AppRoutingModule, HttpClientModule, FormsModule, ReactiveFormsModule, FontAwesomeModule],
 	providers: [],
 	bootstrap: [AppComponent]
 })
