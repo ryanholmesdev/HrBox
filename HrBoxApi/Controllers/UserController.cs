@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using HrBoxApi.Data;
 using HrBoxApi.Models.DB;
 using HrBoxApi.Models;
+using HrBoxApi.Filters;
 
 namespace HrBoxApi.Controllers
 {
@@ -78,7 +79,7 @@ namespace HrBoxApi.Controllers
     // POST: api/User
     // To protect from overposting attacks, please enable the specific properties you want to bind to, for
     // more details see https://aka.ms/RazorPagesCRUD.
-    [HttpPost]
+    [HttpPost, ModelValidator]
     public async Task<ActionResult<Response>> CreateUser(User user)
     {
       _context.Users.Add(user);
