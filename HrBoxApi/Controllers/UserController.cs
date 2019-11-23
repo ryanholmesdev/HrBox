@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using HrBoxApi.Data;
 using HrBoxApi.Models.DB;
 using HrBoxApi.Models;
 using HrBoxApi.Filters;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HrBoxApi.Controllers
 {
-  [Route("api/[controller]")]
+  [Route("api/user")]
   [ApiController]
   public class UserController : ControllerBase
   {
@@ -23,8 +23,14 @@ namespace HrBoxApi.Controllers
       _context = context;
     }
 
+    [HttpGet("test")]
+    public IActionResult test()
+    {
+      return Ok("hello");
+    }
+
     // GET: api/User
-    [HttpGet]
+    [HttpGet("all")]
     public async Task<ActionResult<IEnumerable<User>>> GetUsers()
     {
       return await _context.Users.ToListAsync();
@@ -79,8 +85,8 @@ namespace HrBoxApi.Controllers
     // POST: api/User
     // To protect from overposting attacks, please enable the specific properties you want to bind to, for
     // more details see https://aka.ms/RazorPagesCRUD.
-    [HttpPost, ModelValidator]
-    public async Task<ActionResult<Response>> CreateUser(User user)
+    [HttpPost("CreateUser"), ModelValidator]
+    public async Task<ActionResult<Response>> CreateUser([FromForm]User user)
     {
       _context.Users.Add(user);
       await _context.SaveChangesAsync();

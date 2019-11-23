@@ -1,4 +1,5 @@
 using HrBoxApi.Data;
+using HrBoxApi.Middleware;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -27,15 +28,27 @@ namespace HrBoxApi
 
       // TODO: Restrict this to just the orgins that are needed.
       // Enable cors for all orgins atm 
-      services.AddCors(options =>
+      //services.AddCors(options =>
+      //{
+      //  options.AddPolicy(MyAllowSpecificOrigins,
+      //  builder =>
+      //  {
+      //    builder.WithOrigins("http://localhost:4200/");
+      //  });
+      //});
+      //services.AddControllers();
+
+
+
+      services.AddCors(o => o.AddPolicy("MyAllowSpecificOrigins", builder =>
       {
-        options.AddPolicy(MyAllowSpecificOrigins,
-        builder =>
-        {
-          builder.WithOrigins("http://localhost:4200/");
-        });
-      });
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+      }));
       services.AddControllers();
+
+
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +66,8 @@ namespace HrBoxApi
       app.UseRouting();
 
       app.UseAuthorization();
+
+      app.UseMiddleware(typeof(ErrorHandlingMiddleware));
 
       app.UseEndpoints(endpoints =>
       {
