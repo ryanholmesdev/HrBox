@@ -1,11 +1,18 @@
 using HrBoxApi.Data;
 using HrBoxApi.Middleware;
+using HrBoxApi.Models.Settings;
+using HrBoxApi.Services;
+using HrBoxApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Text;
 
 namespace HrBoxApi
 {
@@ -23,8 +30,42 @@ namespace HrBoxApi
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+      // Get the settings from appsettings.json and strongly type it.
+      var appSettingsSection = Configuration.GetSection("AppSettings");
+      services.Configure<AppSettings>(appSettingsSection);
+
+      AppSettings appSettings = appSettingsSection.Get<AppSettings>();
+
+      var key = Encoding.ASCII.GetBytes(appSettings.JWTSecret);
+
+      // add jwt auth
+      services.AddAuthentication(x =>
+      {
+        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+      })
+      .AddJwtBearer(x =>
+      {
+        x.RequireHttpsMetadata = false;
+        x.SaveToken = true;
+        x.TokenValidationParameters = new TokenValidationParameters
+        {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(key),
+          ValidateIssuer = false,
+          ValidateAudience = false,
+          ValidateLifetime = true,
+          ClockSkew = TimeSpan.Zero
+        };
+      });
+
+
+
+
+
+
       // Add the database context from the default connection string in the appsettings.json
-      services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+      services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appSettings.DefaultConnection));
 
       // TODO: Restrict this to just the orgins that are needed.
       // Enable cors for all orgins atm 
@@ -48,7 +89,8 @@ namespace HrBoxApi
       }));
       services.AddControllers();
 
-
+      services.AddScoped<IUserService, UserService>();
+      services.AddScoped<IAuthService, AuthService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +107,7 @@ namespace HrBoxApi
 
       app.UseRouting();
 
+      app.UseAuthentication();
       app.UseAuthorization();
 
       app.UseMiddleware(typeof(ErrorHandlingMiddleware));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -42,7 +43,8 @@ namespace HrBoxApi.Models.DB
 
     public DateTime? DateOfBirth { get; set; }
 
-    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
-    public DateTime DateCreated { get; set; }
+    public DateTime CreatedUtc { get; set; }
+
+    public ICollection<UserToken> UserTokens { get; set; }
   }
 }

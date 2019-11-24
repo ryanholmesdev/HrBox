@@ -9,6 +9,8 @@ using HrBoxApi.Models.DB;
 using HrBoxApi.Models;
 using HrBoxApi.Filters;
 using Microsoft.AspNetCore.Mvc;
+using HrBoxApi.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HrBoxApi.Controllers
 {
@@ -17,13 +19,15 @@ namespace HrBoxApi.Controllers
   public class UserController : ControllerBase
   {
     private readonly AppDbContext _context;
+    IUserService _userService;
 
-    public UserController(AppDbContext context)
+    public UserController(AppDbContext context, IUserService userService)
     {
       _context = context;
+      _userService = userService;
     }
 
-    [HttpGet("test")]
+    [HttpGet("test"), Authorize]
     public IActionResult test()
     {
       return Ok("hello");
@@ -88,10 +92,8 @@ namespace HrBoxApi.Controllers
     [HttpPost("CreateUser"), ModelValidator]
     public async Task<ActionResult<Response>> CreateUser([FromForm]User user)
     {
-      _context.Users.Add(user);
-      await _context.SaveChangesAsync();
-
-      return new Response(true, "");
+      Response response = await _userService.CreateUserAsync(user);
+      return response; 
     }
 
     // DELETE: api/User/5
