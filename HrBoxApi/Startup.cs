@@ -13,6 +13,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
+using Hangfire;
+using Hangfire.SqlServer;
 
 namespace HrBoxApi
 {
@@ -87,6 +89,25 @@ namespace HrBoxApi
                .AllowAnyMethod()
                .AllowAnyHeader();
       }));
+      
+      // Add Hangfire services.
+      services.AddHangfire(configuration => configuration
+          .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+          .UseSimpleAssemblyNameTypeSerializer()
+          .UseRecommendedSerializerSettings()
+          .UseSqlServerStorage(appSettings.DefaultConnection, new SqlServerStorageOptions
+          {
+            CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
+            SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),
+            QueuePollInterval = TimeSpan.Zero,
+            UseRecommendedIsolationLevel = true,
+            UsePageLocksOnDequeue = true,
+            DisableGlobalLocks = true
+          }));
+
+      // Add the processing server as IHostedService
+      services.AddHangfireServer();
+
       services.AddControllers();
 
       services.AddScoped<IUserService, UserService>();
@@ -100,6 +121,9 @@ namespace HrBoxApi
       {
         app.UseDeveloperExceptionPage();
       }
+
+      app.UseHangfireDashboard();
+
       // TODO: Update a proper cors policy, Enable cors
       app.UseCors(MyAllowSpecificOrigins);
 
@@ -116,6 +140,9 @@ namespace HrBoxApi
       {
         endpoints.MapControllers();
       });
+
+
+
     }
   }
 }

@@ -9,7 +9,8 @@ namespace HrBoxApi.Filters
     {
       if (!context.ModelState.IsValid)
       {
-        context.Result = new BadRequestObjectResult(context.ModelState); // returns 400 with error
+        // TODO: Check this.
+        context.Result = new BadRequestObjectResult(context.ModelState); // returns 400 with validation error contents error
       }
     }
   }
