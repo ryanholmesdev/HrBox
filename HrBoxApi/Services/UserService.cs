@@ -2,9 +2,13 @@
 using HrBoxApi.Models;
 using HrBoxApi.Models.DB;
 using HrBoxApi.Services.Interfaces;
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace HrBoxApi.Services
@@ -23,12 +27,20 @@ namespace HrBoxApi.Services
       // Check that the users email doesn't already exist
       bool emailExists =  _context.Users.Any(u => u.Email == user.Email);
       if (!emailExists)
-      {       
-        user.Password = HashPassword(user.Password);
+      {
+        bool isDisposableEmail = IsEmailDomainBlocked(user.Email);
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        if (!isDisposableEmail)
+        {
+          user.Password = HashPassword(user.Password);
 
+          _context.Users.Add(user);
+          await _context.SaveChangesAsync();
+        }
+        else
+        {
+          return new Response(false, "The email address is a known disposable email.");
+        }
         return new Response(true);
       }
       else
@@ -52,6 +64,26 @@ namespace HrBoxApi.Services
     {
       user.Password = null;
       return user;
+    }
+
+    private static bool IsEmailDomainBlocked(string email)
+    {
+      List<string> blockedEmailDomains = new List<string>();
+
+      var thisAssembly = Assembly.GetExecutingAssembly();
+      using (var stream = thisAssembly.GetManifestResourceStream("HrBoxApi.Resources.disposable-email-domains.json"))
+      {
+        using (var reader = new StreamReader(stream))
+        {
+          string fileJson = reader.ReadToEnd();
+          blockedEmailDomains = JsonConvert.DeserializeObject<List<string>>(fileJson);
+        }
+      }
+
+      MailAddress address = new MailAddress(email);
+      string host = address.Host; // just host of email
+
+      return blockedEmailDomains.Contains(host);
     }
   }
 }

@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Resources\disposable-email-domains.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\disposable-email-domains.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt-Official" Version="0.1.109" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.7.7" />
     <PackageReference Include="Hangfire.Core" Version="1.7.7" />

@@ -140,9 +140,6 @@ namespace HrBoxApi
       {
         endpoints.MapControllers();
       });
-
-
-
     }
   }
 }
