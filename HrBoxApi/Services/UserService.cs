@@ -3,7 +3,6 @@ using HrBoxApi.Models;
 using HrBoxApi.Models.DB;
 using HrBoxApi.Services.Interfaces;
 using Newtonsoft.Json;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,7 +24,7 @@ namespace HrBoxApi.Services
     public async Task<Response> CreateUserAsync(User user)
     {
       // Check that the users email doesn't already exist
-      bool emailExists =  _context.Users.Any(u => u.Email == user.Email);
+      bool emailExists = _context.Users.Any(u => u.Email == user.Email);
       if (!emailExists)
       {
         bool isDisposableEmail = IsEmailDomainBlocked(user.Email);

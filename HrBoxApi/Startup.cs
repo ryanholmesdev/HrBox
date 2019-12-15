@@ -15,6 +15,8 @@ using System;
 using System.Text;
 using Hangfire;
 using Hangfire.SqlServer;
+using HrBoxApi.Jobs;
+using HrBoxApi.Jobs.Interfaces;
 
 namespace HrBoxApi
 {
@@ -110,8 +112,12 @@ namespace HrBoxApi
 
       services.AddControllers();
 
+      // Services...
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<IAuthService, AuthService>();
+
+      // Jobs...
+      services.AddScoped<ITokenJob, TokenJob>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -140,6 +146,9 @@ namespace HrBoxApi
       {
         endpoints.MapControllers();
       });
+
+      // Schedule all background jobs.
+      HangfireJobScheduler.ScheduleRecurringJobs();
     }
   }
 }
