@@ -1,6 +1,9 @@
+using Hangfire;
+using Hangfire.SqlServer;
 using HrBoxApi.Data;
+using HrBoxApi.Jobs;
+using HrBoxApi.Jobs.Interfaces;
 using HrBoxApi.Middleware;
-using HrBoxApi.Models.Settings;
 using HrBoxApi.Services;
 using HrBoxApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -13,10 +16,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
-using Hangfire;
-using Hangfire.SqlServer;
-using HrBoxApi.Jobs;
-using HrBoxApi.Jobs.Interfaces;
 
 namespace HrBoxApi
 {
@@ -69,7 +68,7 @@ namespace HrBoxApi
 
 
       // Add the database context from the default connection string in the appsettings.json
-      services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appSettings.DefaultConnection));
+      services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appSettings.ConnectionString));
 
       // TODO: Restrict this to just the orgins that are needed.
       // Enable cors for all orgins atm 
@@ -91,13 +90,13 @@ namespace HrBoxApi
                .AllowAnyMethod()
                .AllowAnyHeader();
       }));
-      
+
       // Add Hangfire services.
       services.AddHangfire(configuration => configuration
           .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
           .UseSimpleAssemblyNameTypeSerializer()
           .UseRecommendedSerializerSettings()
-          .UseSqlServerStorage(appSettings.DefaultConnection, new SqlServerStorageOptions
+          .UseSqlServerStorage(appSettings.ConnectionString, new SqlServerStorageOptions
           {
             CommandBatchMaxTimeout = TimeSpan.FromMinutes(5),
             SlidingInvisibilityTimeout = TimeSpan.FromMinutes(5),

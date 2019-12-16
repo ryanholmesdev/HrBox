@@ -2,6 +2,7 @@
 using HrBoxApi.Models;
 using HrBoxApi.Models.DB;
 using HrBoxApi.Services.Interfaces;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,10 +16,12 @@ namespace HrBoxApi.Services
   public class AuthService : IAuthService
   {
     private readonly AppDbContext _context;
+    private readonly AppSettings _appSettings;
 
-    public AuthService(AppDbContext context)
+    public AuthService(AppDbContext context, IOptions<AppSettings> appSettings)
     {
       _context = context;
+      _appSettings = appSettings.Value;
     }
 
     public LoginResponse LoginUser(string email, string password)
@@ -33,7 +36,7 @@ namespace HrBoxApi.Services
         {
 
           // TODO: Store this somewhere in settings.
-          string jwtSecret = "dsadasfasdf2wfq2fasgfasdgasdg3g3gq3gsdgsdgsdg3";
+          string jwtSecret = _appSettings.JWTSecret;
 
           // TODO: Store expiry time in settings.
           DateTime expiryDate = DateTime.UtcNow.AddMinutes(1);
@@ -86,7 +89,7 @@ namespace HrBoxApi.Services
         UserToken userToken = _context.UserTokens.SingleOrDefault(t => t.Token == token & t.RefreshToken == refreshToken & t.UserID == userid);
         if (userToken != null && userToken.RefreshTokenExpiryDateUtc > DateTime.UtcNow)
         {
-          string jwtSecret = "dsadasfasdf2wfq2fasgfasdgasdg3g3gq3gsdgsdgsdg3";
+          string jwtSecret = _appSettings.JWTSecret;
 
           // TODO: Store expiry time in settings.
           DateTime expiryDate = DateTime.UtcNow.AddMinutes(1);
@@ -135,7 +138,7 @@ namespace HrBoxApi.Services
     {
       try
       {
-        string jwtSecret = "dsadasfasdf2wfq2fasgfasdgasdg3g3gq3gsdgsdgsdg3";
+        string jwtSecret = _appSettings.JWTSecret;
 
         var tokenValidationParamters = new TokenValidationParameters
         {
