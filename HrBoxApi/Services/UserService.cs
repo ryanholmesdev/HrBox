@@ -54,25 +54,14 @@ namespace HrBoxApi.Services
       return BCrypt.Net.BCrypt.HashPassword(password, hashLevel);
     }
 
-    //public static IEnumerable<User> GetUsersWithoutPassword()
-    //{
-    //  var users = _context.Users.Select(u => RemovePasswordDisplay(u));
-    //}
-
-    private static User RemovePasswordDisplay(User user)
-    {
-      user.Password = null;
-      return user;
-    }
-
     private static bool IsEmailDomainBlocked(string email)
     {
       List<string> blockedEmailDomains = new List<string>();
 
-      var thisAssembly = Assembly.GetExecutingAssembly();
-      using (var stream = thisAssembly.GetManifestResourceStream("HrBoxApi.Resources.disposable-email-domains.json"))
+      Assembly thisAssembly = Assembly.GetExecutingAssembly();
+      using (Stream stream = thisAssembly.GetManifestResourceStream("HrBoxApi.Resources.disposable-email-domains.json"))
       {
-        using (var reader = new StreamReader(stream))
+        using (StreamReader reader = new StreamReader(stream))
         {
           string fileJson = reader.ReadToEnd();
           blockedEmailDomains = JsonConvert.DeserializeObject<List<string>>(fileJson);
@@ -80,7 +69,7 @@ namespace HrBoxApi.Services
       }
 
       MailAddress address = new MailAddress(email);
-      string host = address.Host; // just host of email
+      string host = address.Host;
 
       return blockedEmailDomains.Contains(host);
     }

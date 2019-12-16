@@ -114,6 +114,7 @@ namespace HrBoxApi
       // Services...
       services.AddScoped<IUserService, UserService>();
       services.AddScoped<IAuthService, AuthService>();
+      services.AddScoped<ITokenService, TokenService>();
 
       // Jobs...
       services.AddScoped<ITokenJob, TokenJob>();

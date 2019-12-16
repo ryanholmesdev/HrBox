@@ -17,11 +17,13 @@ namespace HrBoxApi.Services
   {
     private readonly AppDbContext _context;
     private readonly AppSettings _appSettings;
+    private readonly ITokenService _tokenService;
 
-    public AuthService(AppDbContext context, IOptions<AppSettings> appSettings)
+    public AuthService(AppDbContext context, IOptions<AppSettings> appSettings, ITokenService tokenService)
     {
       _context = context;
       _appSettings = appSettings.Value;
+      _tokenService = tokenService;
     }
 
     public LoginResponse LoginUser(string email, string password)
@@ -34,65 +36,46 @@ namespace HrBoxApi.Services
         bool isPasswordCorrect = ValidatePassword(password, user.Password);
         if (isPasswordCorrect)
         {
+          // authentication successful, generate token and refresh token.
+          TokenResponse tokenResponse = _tokenService.GenerateToken(user);
 
-          // TODO: Store this somewhere in settings.
-          string jwtSecret = _appSettings.JWTSecret;
-
-          // TODO: Store expiry time in settings.
-          DateTime expiryDate = DateTime.UtcNow.AddMinutes(1);
-
-          // authentication successful so generate jwt token
-          var tokenHandler = new JwtSecurityTokenHandler();
-          var key = Encoding.ASCII.GetBytes(jwtSecret);
-          var tokenDescriptor = new SecurityTokenDescriptor
-          {
-            Subject = new ClaimsIdentity(new Claim[]
-              {
-                new Claim(ClaimTypes.Name, user.Id.ToString())
-              }),
-
-            // TODO: Expire sooner !!
-            Expires = expiryDate,
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-          };
-
-          SecurityToken securityToken = tokenHandler.CreateToken(tokenDescriptor);
-          string token = tokenHandler.WriteToken(securityToken);
-          string refreshToken = GenerateRefreshToken();
-
-          // save this token.
-          SaveUserToken(token, refreshToken, user.Id, expiryDate);
-
-          return new LoginResponse(true, null, token, refreshToken);
+          return new LoginResponse(true, null, tokenResponse.Token, tokenResponse.RefreshToken);
         }
         else
         {
-          //TODO: Password is incorrect.
+          // Password is incorrect.
           return new LoginResponse(false, "Email or password is incorrect");
         }
 
       }
       else
       {
-        // TODO: User email or password is incorrect.
+        // Email invalid.
         return new LoginResponse(false, "Email or password is incorrect");
       }
     }
 
     public TokenResponse RefreshToken(string token, string refreshToken)
     {
+
+
+
+
       int? userid = ValidateTokenAndGetUserID(token);
                           
       if (userid != null)
       {
         // TODO: Do we need all these where clauses ?????
         UserToken userToken = _context.UserTokens.SingleOrDefault(t => t.Token == token & t.RefreshToken == refreshToken & t.UserID == userid);
-        if (userToken != null && userToken.RefreshTokenExpiryDateUtc > DateTime.UtcNow)
+        
+        
+        
+        
+        if (userToken != null && userToken.RefreshToken == refreshToken && userToken.Token == token && userToken.RefreshTokenExpiryDateUtc > DateTime.UtcNow)
         {
           string jwtSecret = _appSettings.JWTSecret;
 
-          // TODO: Store expiry time in settings.
-          DateTime expiryDate = DateTime.UtcNow.AddMinutes(1);
+          DateTime expiryDate = DateTime.UtcNow.AddMinutes(_appSettings.TokenExpiryMinutes);
 
           // authentication successful so generate jwt token
           var tokenHandler = new JwtSecurityTokenHandler();
@@ -104,7 +87,6 @@ namespace HrBoxApi.Services
                 new Claim(ClaimTypes.Name, userid.ToString())
               }),
 
-            // TODO: Expire sooner !!
             Expires = expiryDate,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
           };
@@ -120,6 +102,9 @@ namespace HrBoxApi.Services
         }
         else
         {
+          // Unable to find the user's refresh token because it's been deleted on TokenJob or its expired.
+
+
           // TODO: THROW the user token cannot be refreshed because one cannot be found or because the refresh token has expired.
           return null;
         }
@@ -179,8 +164,6 @@ namespace HrBoxApi.Services
 
     private void SaveUserToken(string token, string refreshToken, int userID, DateTime expiryDate)
     {
-      // TODO: Add refresh expiry
-
       UserToken userToken = new UserToken()
       {
         Id = 0,
@@ -188,7 +171,7 @@ namespace HrBoxApi.Services
         RefreshToken = refreshToken,
         UserID = userID,
         TokenExpiryDateUtc = expiryDate,
-        RefreshTokenExpiryDateUtc = DateTime.UtcNow.AddMinutes(30)
+        RefreshTokenExpiryDateUtc = DateTime.UtcNow.AddMinutes(_appSettings.RefreshExpiryMinutes)
       };
 
       // Delete any old tokens

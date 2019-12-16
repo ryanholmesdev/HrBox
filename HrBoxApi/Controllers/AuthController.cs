@@ -17,10 +17,12 @@ namespace HrBoxApi.Controllers
   public class AuthController : ControllerBase
   {
     IAuthService _authService;
+    ITokenService _tokenService;
 
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService, ITokenService tokenService)
     {
       _authService = authService;
+      _tokenService = tokenService;
     }
 
     [HttpPost("login"), ModelValidator]
@@ -30,11 +32,12 @@ namespace HrBoxApi.Controllers
       return response;
     }
 
-    [HttpPost("RefreshToken"), AllowAnonymous]
-    public async Task<TokenResponse> RefreshToken([FromForm]string token, [FromForm]string refreshToken)
+    [HttpPost("RefreshToken"), AllowAnonymous, ProducesResponseType(typeof(TokenResponse), 201)]
+    public IActionResult RefreshToken([FromForm]string token, [FromForm]string refreshToken)
     {
-      TokenResponse response = _authService.RefreshToken(token, refreshToken);
-      return response;
+      TokenResponse response = _tokenService.RefreshToken(token, refreshToken);
+      if (response != null) return BadRequest("Unable to refresh token");
+      return Ok(response);
     }
   }
 }
