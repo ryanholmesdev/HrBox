@@ -43,6 +43,8 @@ namespace HrBoxApi.Models.DB
 
     public DateTime? DateOfBirth { get; set; }
 
+    public bool EmailVerified { get; set; } = false;
+
     public DateTime CreatedUtc { get; set; }
 
     public ICollection<UserToken> UserTokens { get; set; }

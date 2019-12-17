@@ -35,17 +35,24 @@ namespace HrBoxApi.Services
 
           _context.Users.Add(user);
           await _context.SaveChangesAsync();
+
+          // TODO: Send email verification code.
+          return new Response(true);
         }
         else
         {
           return new Response(false, "The email address is a known disposable email.");
-        }
-        return new Response(true);
+        }  
       }
       else
       {
         return new Response(false, "The email address is already in use");
       }
+    }
+
+    public Task<Response> VerifyUser(string email, string verifyCode)
+    {
+      
     }
 
     private string HashPassword(string password)

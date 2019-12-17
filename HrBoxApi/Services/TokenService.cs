@@ -33,7 +33,8 @@ namespace HrBoxApi.Services
       {
         Subject = new ClaimsIdentity(new Claim[]
           {
-                new Claim(ClaimTypes.Name, user.Id.ToString())
+                new Claim(ClaimTypes.Name, user.Id.ToString()),
+                new Claim("EmailVerified", user.EmailVerified.ToString())
           }),
         Expires = expiryDate,
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

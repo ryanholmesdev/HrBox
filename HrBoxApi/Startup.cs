@@ -4,6 +4,7 @@ using HrBoxApi.Data;
 using HrBoxApi.Jobs;
 using HrBoxApi.Jobs.Interfaces;
 using HrBoxApi.Middleware;
+using HrBoxApi.Models;
 using HrBoxApi.Services;
 using HrBoxApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Security.Claims;
 using System.Text;
 
 namespace HrBoxApi
@@ -42,16 +44,19 @@ namespace HrBoxApi
       var key = Encoding.ASCII.GetBytes(appSettings.JWTSecret);
 
       // add jwt auth
-      services.AddAuthentication(x =>
+      services.AddAuthentication(options =>
       {
-        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+       
+
       })
-      .AddJwtBearer(x =>
+      .AddJwtBearer(options =>
       {
-        x.RequireHttpsMetadata = false;
-        x.SaveToken = true;
-        x.TokenValidationParameters = new TokenValidationParameters
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
         {
           ValidateIssuerSigningKey = true,
           IssuerSigningKey = new SymmetricSecurityKey(key),
@@ -60,11 +65,8 @@ namespace HrBoxApi
           ValidateLifetime = true,
           ClockSkew = TimeSpan.Zero
         };
+        options.EventsType = typeof(CustomJwtBearerEvents);
       });
-
-
-
-
 
 
       // Add the database context from the default connection string in the appsettings.json
@@ -118,6 +120,9 @@ namespace HrBoxApi
 
       // Jobs...
       services.AddScoped<ITokenJob, TokenJob>();
+
+      // Models
+      services.AddTransient<CustomJwtBearerEvents>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

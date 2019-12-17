@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HrBoxApi.Filters;
+﻿using HrBoxApi.Filters;
 using HrBoxApi.Models;
 using HrBoxApi.Models.Requests;
 using HrBoxApi.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace HrBoxApi.Controllers
 {
