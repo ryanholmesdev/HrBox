@@ -1,1 +1,53 @@
-<p>login works!</p>
+<div class="login-container">
+	<h1>Login with HrBox</h1>
+
+	<form name="form" [formGroup]="loginForm" (ngSubmit)="loginUser()" novalidate>
+		<!-- Email -->
+		<div class="field">
+			<label class="label" for="Email">Email</label>
+			<div class="control has-icons-left">
+				<input type="email" class="input" name="Email" formControlName="Email" [class.is-danger]="(submitted || f.Email.touched) && f.Email.invalid" />
+				<span class="icon is-small is-left">
+					<fa-icon [icon]="faEnvelope"></fa-icon>
+				</span>
+			</div>
+			<div *ngIf="(submitted || f.Email.touched) && f.Email.errors" class="help is-danger">
+				<p *ngIf="f.Email.errors.required">Email is required.</p>
+				<p *ngIf="f.Email.errors.Email">Invalid email address.</p>
+			</div>
+		</div>
+
+		<!-- Password -->
+		<div class="field" for="Password">
+			<label class="label">Password</label>
+			<div class="control has-icons-left">
+				<input
+					class="input"
+					type="password"
+					formControlName="Password"
+					name="Password"
+					[class.is-danger]="(submitted || f.Password.touched) && f.Password.invalid"
+				/>
+				<span class="icon is-small is-left">
+					<fa-icon [icon]="faLock"></fa-icon>
+				</span>
+			</div>
+			<div *ngIf="(submitted || f.Password.touched) && f.Password.errors" class="help is-danger">
+				<p *ngIf="f.Password.errors.required">Password is required.</p>
+			</div>
+		</div>
+
+		<!-- Final Result -->
+		<div class="field">
+			<div class="control">
+				<div *ngIf="!submitting && submitted && !success" class="help is-danger">
+					<span>{{ submitMsg }}</span>
+				</div>
+				<div *ngIf="!submitting && submitted && success" class="help is-success">
+					<span>{{ submitMsg }}</span>
+				</div>
+				<button class="button is-success" type="submit" [class.is-loading]="submitting" [disabled]="submitting || success">Login</button>
+			</div>
+		</div>
+	</form>
+</div>

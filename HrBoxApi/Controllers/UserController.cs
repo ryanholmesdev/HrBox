@@ -46,7 +46,8 @@ namespace HrBoxApi.Controllers
     [HttpGet("VerifyEmail")]
     public async Task<ActionResult<Response>> VerifyEmail([FromForm]string email, string verifyCode)
     {
-      return Ok();
+      var response = _userService.VerifyUser(email, verifyCode);
+      return Ok(response);
     }
 
     [HttpPost("ResendVerificationEmail")]

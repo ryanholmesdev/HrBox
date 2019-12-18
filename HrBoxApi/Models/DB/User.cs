@@ -47,6 +47,9 @@ namespace HrBoxApi.Models.DB
 
     public DateTime CreatedUtc { get; set; }
 
+    [MinLength(5), MaxLength(5)]
+    public string EmailVerifyCode { get; set; }
+
     public ICollection<UserToken> UserTokens { get; set; }
   }
 }

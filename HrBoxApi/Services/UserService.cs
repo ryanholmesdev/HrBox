@@ -3,11 +3,13 @@ using HrBoxApi.Models;
 using HrBoxApi.Models.DB;
 using HrBoxApi.Services.Interfaces;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace HrBoxApi.Services
@@ -32,7 +34,9 @@ namespace HrBoxApi.Services
         if (!isDisposableEmail)
         {
           user.Password = HashPassword(user.Password);
+          user.EmailVerifyCode = GenerateEmailVerifyCode();
 
+          // Generate email verify code.
           _context.Users.Add(user);
           await _context.SaveChangesAsync();
 
@@ -42,7 +46,7 @@ namespace HrBoxApi.Services
         else
         {
           return new Response(false, "The email address is a known disposable email.");
-        }  
+        }
       }
       else
       {
@@ -50,9 +54,21 @@ namespace HrBoxApi.Services
       }
     }
 
-    public Task<Response> VerifyUser(string email, string verifyCode)
+    public Response VerifyUser(string email, string verifyCode)
     {
-      
+      User user = _context.Users.Single(u => u.Email == email);
+
+      if (user.EmailVerifyCode == verifyCode)
+      {
+        // remove no longer needed
+        user.EmailVerifyCode = null;
+        user.EmailVerified = true;
+
+        _context.SaveChanges();
+
+        return new Response(true);
+      }
+      return new Response(false, "Verify Code invalid");
     }
 
     private string HashPassword(string password)
@@ -79,6 +95,17 @@ namespace HrBoxApi.Services
       string host = address.Host;
 
       return blockedEmailDomains.Contains(host);
+    }
+
+    private string GenerateEmailVerifyCode()
+    {
+      StringBuilder sb = new StringBuilder();
+      Random random = new Random();
+      for (int i = 0; i < 5; i++)
+      {
+        sb.Append(random.Next(0, 10));
+      }
+      return sb.ToString();
     }
   }
 }

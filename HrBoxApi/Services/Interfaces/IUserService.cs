@@ -7,6 +7,6 @@ namespace HrBoxApi.Services.Interfaces
   public interface IUserService
   {
     Task<Response> CreateUserAsync(User user);
-    Task<Response> VerifyUser(string email, string verifyCode);
+    Response VerifyUser(string email, string verifyCode);
   }
 }

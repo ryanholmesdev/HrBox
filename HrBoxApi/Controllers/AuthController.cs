@@ -28,6 +28,16 @@ namespace HrBoxApi.Controllers
       return response;
     }
 
+    [HttpPost("logout"), AllowAnonymous]
+    public async Task<LoginResponse> Logout()
+    {
+      // DONT HARDCODE THIS
+      _authService.LogoutUser(1);
+
+      return null;
+    }
+
+
     [HttpPost("RefreshToken"), AllowAnonymous, ProducesResponseType(typeof(TokenResponse), 201)]
     public IActionResult RefreshToken([FromForm]string token, [FromForm]string refreshToken)
     {

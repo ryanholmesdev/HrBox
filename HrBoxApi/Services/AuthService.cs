@@ -57,20 +57,13 @@ namespace HrBoxApi.Services
 
     public TokenResponse RefreshToken(string token, string refreshToken)
     {
-
-
-
-
       int? userid = ValidateTokenAndGetUserID(token);
                           
       if (userid != null)
       {
         // TODO: Do we need all these where clauses ?????
         UserToken userToken = _context.UserTokens.SingleOrDefault(t => t.Token == token & t.RefreshToken == refreshToken & t.UserID == userid);
-        
-        
-        
-        
+ 
         if (userToken != null && userToken.RefreshToken == refreshToken && userToken.Token == token && userToken.RefreshTokenExpiryDateUtc > DateTime.UtcNow)
         {
           string jwtSecret = _appSettings.JWTSecret;
@@ -103,8 +96,6 @@ namespace HrBoxApi.Services
         else
         {
           // Unable to find the user's refresh token because it's been deleted on TokenJob or its expired.
-
-
           // TODO: THROW the user token cannot be refreshed because one cannot be found or because the refresh token has expired.
           return null;
         }
@@ -196,6 +187,12 @@ namespace HrBoxApi.Services
         rng.GetBytes(randomNumber);
         return Convert.ToBase64String(randomNumber);
       }
+    }
+
+    public void LogoutUser(int userId)
+    {
+      _context.UserTokens.RemoveRange(_context.UserTokens.Where(t => t.UserID == userId));
+      _context.SaveChanges();
     }
   }
 }
