@@ -1,4 +1,4 @@
 export interface GenericResponse {
-	Success: boolean;
-	Msg: string;
+	success: boolean;
+	msg: string;
 }

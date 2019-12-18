@@ -15,5 +15,7 @@ namespace HrBoxApi.Models
       Token = token;
       RefreshToken = refreshToken;
     }
+
+    public TokenResponse() { }
   }
 }

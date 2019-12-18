@@ -33,7 +33,7 @@ export class RegisterComponent implements OnInit {
 			this.resestSubmitStatus();
 			this.userService.registerUser(this.registerForm.value).subscribe(
 				(data: GenericResponse) => {
-					if (data.Success === true) {
+					if (data.success === true) {
 						console.log('Created User');
 					} else {
 						console.log('Failed to create user');

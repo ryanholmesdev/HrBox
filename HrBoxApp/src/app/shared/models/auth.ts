@@ -6,22 +6,40 @@ export class LoginRequest {
 }
 
 export class LoggedInUser {
-	FirstName: string;
-	LastName: String;
-	Email: string;
-	Tokens: TokenModel;
+	firstName: string;
+	lastName: String;
+	email: string;
+	tokens: TokenModel;
 
-	constructor(tokens: TokenModel) {
-		this.Tokens = tokens;
+	constructor(firstname: string, lastname: string, email: string, tokens: TokenModel) {
+		this.firstName = firstname;
+		this.lastName = lastname;
+		this.email = email;
+		this.tokens = tokens;
 	}
 }
 
 export class TokenModel {
-	Token: string;
-	RefreshToken: string;
+	token: string;
+	refreshToken: string;
 }
 
 export class LoginResponse {
-	Response: GenericResponse;
-	Token: TokenModel;
+	response: GenericResponse;
+	tokens: TokenModel;
+}
+
+export class TokenProps {
+	emailVerified: boolean;
+	expiryDate: number;
+	iat: number;
+	nfp: number;
+	userId: number;
+	constructor(emailVerified: boolean, expiryDate: number, iat: number, nfp: number, userId: number) {
+		this.emailVerified = emailVerified;
+		this.expiryDate = expiryDate;
+		this.iat = iat;
+		this.nfp = nfp;
+		this.userId = userId;
+	}
 }

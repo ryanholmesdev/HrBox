@@ -16,9 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Security.Claims;
 using System.Text;
-
 namespace HrBoxApi
 {
   public class Startup
@@ -27,8 +25,6 @@ namespace HrBoxApi
     {
       Configuration = configuration;
     }
-
-    readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
     public IConfiguration Configuration { get; }
 
@@ -48,9 +44,6 @@ namespace HrBoxApi
       {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-       
-
       })
       .AddJwtBearer(options =>
       {
@@ -68,30 +61,23 @@ namespace HrBoxApi
         options.EventsType = typeof(CustomJwtBearerEvents);
       });
 
-
       // Add the database context from the default connection string in the appsettings.json
       services.AddDbContext<AppDbContext>(options => options.UseSqlServer(appSettings.ConnectionString));
 
-      // TODO: Restrict this to just the orgins that are needed.
-      // Enable cors for all orgins atm 
-      //services.AddCors(options =>
-      //{
-      //  options.AddPolicy(MyAllowSpecificOrigins,
-      //  builder =>
-      //  {
-      //    builder.WithOrigins("http://localhost:4200/");
-      //  });
-      //});
-      //services.AddControllers();
-
-
+      services.AddControllers();
 
       services.AddCors(o => o.AddPolicy("MyAllowSpecificOrigins", builder =>
       {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        builder.WithOrigins("http://localhost:4200")
+        .AllowAnyMethod()
+        .AllowAnyHeader();
       }));
+
+
+      //builder.AllowAnyOrigin()
+      //       .AllowAnyMethod()
+      //       .AllowAnyHeader();
+    //}));
 
       // Add Hangfire services.
       services.AddHangfire(configuration => configuration
@@ -132,17 +118,18 @@ namespace HrBoxApi
       {
         app.UseDeveloperExceptionPage();
       }
+      app.UseRouting();
+
+      app.UseCors("MyAllowSpecificOrigins");
 
       app.UseHangfireDashboard();
 
-      // TODO: Update a proper cors policy, Enable cors
-      app.UseCors(MyAllowSpecificOrigins);
-
       app.UseHttpsRedirection();
 
-      app.UseRouting();
+      
 
       app.UseAuthentication();
+
       app.UseAuthorization();
 
       app.UseMiddleware(typeof(ErrorHandlingMiddleware));
@@ -151,6 +138,8 @@ namespace HrBoxApi
       {
         endpoints.MapControllers();
       });
+
+      
 
       // Schedule all background jobs.
       HangfireJobScheduler.ScheduleRecurringJobs();

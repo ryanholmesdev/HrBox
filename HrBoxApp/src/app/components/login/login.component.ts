@@ -1,8 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { UserService } from 'src/app/services/user.service';
-import { GenericResponse } from 'src/app/shared/models/generic';
-import { throwError } from 'rxjs';
 import { faEnvelope, faLock, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { AuthService } from 'src/app/services/auth.service';
 import { first } from 'rxjs/operators';
@@ -38,14 +35,15 @@ export class LoginComponent implements OnInit {
 				.pipe(first())
 				.subscribe(
 					(data: LoginResponse) => {
-						if (data.Response.Success) {
+						if (data.response.success) {
 							console.log('LOGGED IN');
 							//this.router.navigate(['/profile']);
 						} else {
-							this.submitMsg = data.Response.Msg ? data.Response.Msg : 'Unable to login';
+							this.submitMsg = data.response.msg ? data.response.msg : 'Unable to login';
 							this.success = false;
 						}
 						this.submitting = false;
+						this.submitted = true;
 					},
 					error => {
 						console.log(error);

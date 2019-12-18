@@ -49,15 +49,15 @@ namespace HrBoxApi.Services
       return new TokenResponse(token, refreshToken);
     }
 
-    public TokenResponse RefreshToken(string token, string refreshToken)
+    public TokenResponse RefreshToken(TokenResponse tokens)
     {
-      int? userid = ValidateTokenAndGetUserID(token);
+      int? userid = ValidateTokenAndGetUserID(tokens.Token);
 
       if (userid != null)
       {
-        UserToken userToken = _context.UserTokens.SingleOrDefault(t => t.Token == token && t.UserID == userid);
+        UserToken userToken = _context.UserTokens.SingleOrDefault(t => t.Token == tokens.Token && t.UserID == userid);
 
-        if (userToken != null && userToken.RefreshToken == refreshToken && userToken.Token == token && userToken.RefreshTokenExpiryDateUtc > DateTime.UtcNow)
+        if (userToken != null && userToken.RefreshToken == tokens.RefreshToken && userToken.Token == tokens.Token && userToken.RefreshTokenExpiryDateUtc > DateTime.UtcNow)
         {
           User user = _context.Users.Single(u => u.Id == userid);
 
