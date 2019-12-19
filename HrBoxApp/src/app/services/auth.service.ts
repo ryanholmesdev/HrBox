@@ -10,11 +10,10 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AuthService {
 	private baseUrl: string = `${environment.apiUrl}/api/auth/`;
-
-	$loggedInUser: BehaviorSubject<LoggedInUser> = new BehaviorSubject(null);
-
 	private tokenExpiryTimeout: any = null;
 	private isRefreshing: boolean = false;
+
+	$loggedInUser: BehaviorSubject<LoggedInUser> = new BehaviorSubject(null);
 
 	constructor(private httpClient: HttpClient) {
 		this.checkTimeoutOfToken();
@@ -35,6 +34,46 @@ export class AuthService {
 			catchError(err => {
 				return throwError(err);
 			})
+		);
+	}
+
+	createRefreshTokenObservable(tokens: TokenModel) {
+		return this.httpClient.post<TokenModel>(`${this.baseUrl}RefreshToken`, tokens).pipe(
+			tap((tokens: TokenModel) => {
+				this.saveTokens(tokens);
+			})
+		);
+	}
+
+	refreshToken(tokens: TokenModel) {
+		if (!this.isRefreshing) {
+			this.isRefreshing = true;
+			// todo retry the refresh.
+			console.log('Refresh of token is needed');
+			this.createRefreshTokenObservable(tokens).subscribe(
+				(data: TokenModel) => {
+					if (data) {
+						this.saveTokens(data);
+					}
+				},
+				error => {
+					console.log(error);
+					console.log('Unable to refresh');
+					// remove tokens.
+					this.removeTokens();
+				}
+			);
+		}
+	}
+
+	logout(): void {
+		this.httpClient.get<boolean>(`${this.baseUrl}logout`).subscribe(
+			(response: boolean) => {
+				return response;
+			},
+			error => {
+				return false;
+			}
 		);
 	}
 
@@ -97,29 +136,14 @@ export class AuthService {
 	}
 
 	private setExpiryTimeout(tokenProp: TokenProps): void {
-		//this.tokenExpiryTimeout = setTimeout(()=> this.refreshToken(), tokenProp.expiryDate);
+		const interval = new Date(tokenProp.expiryDate * 1000).getTime() - new Date().getTime();
+		this.tokenExpiryTimeout = setTimeout(() => {
+			this.refreshToken(this.getTokens());
+		}, interval);
 	}
 
-	public createRefreshTokenObservable(tokens: TokenModel) {
-		return this.httpClient.post<TokenModel>(`${this.baseUrl}RefreshToken`, tokens).pipe(
-			tap((tokens: TokenModel) => {
-				this.saveTokens(tokens);
-			})
-		);
-	}
-
-	public refreshToken(tokens: TokenModel) {
-		// todo retry the refresh.
-		console.log('Refresh of token is needed');
-		this.createRefreshTokenObservable(tokens).subscribe(
-			(data: TokenModel) => {
-				if (data) {
-					this.saveTokens(data);
-				}
-			},
-			error => {
-				console.log(error);
-			}
-		);
+	private removeTokens() {
+		localStorage.removeItem('token');
+		localStorage.removeItem('refreshToken');
 	}
 }

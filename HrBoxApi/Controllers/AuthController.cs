@@ -28,13 +28,13 @@ namespace HrBoxApi.Controllers
       return response;
     }
 
-    [HttpPost("logout"), AllowAnonymous]
-    public async Task<LoginResponse> Logout()
+    [HttpGet("logout"), AllowAnonymous]
+    public async Task<bool> Logout()
     {
       // DONT HARDCODE THIS
       _authService.LogoutUser(1);
 
-      return null;
+      return true;
     }
 
 
